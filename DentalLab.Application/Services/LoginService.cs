@@ -1,0 +1,211 @@
+namespace DentalLab.Application.Services;
+
+using DentalLab.Application.DTOs;
+using DentalLab.Domain.Entities;
+using DentalLab.Domain.Interfaces;
+using BCrypt.Net;
+using Microsoft.Extensions.Logging;
+
+/// <summary>
+/// Serviço de autenticação e gerenciamento de usuários
+/// </summary>
+public class LoginService
+{
+    private readonly IUsuarioRepository _usuarioRepository;
+    private readonly ILogger<LoginService> _logger;
+    private Usuario? _usuarioLogado;
+
+    public LoginService(IUsuarioRepository usuarioRepository, ILogger<LoginService> logger)
+    {
+        _usuarioRepository = usuarioRepository;
+        _logger = logger;
+    }
+
+    /// <summary>
+    /// Realiza o login do usuário
+    /// </summary>
+    public async Task<LoginResponseDto?> LoginAsync(LoginRequestDto request)
+    {
+        try
+        {
+            if (string.IsNullOrWhiteSpace(request.Email) || string.IsNullOrWhiteSpace(request.Senha))
+            {
+                _logger.LogWarning("Tentativa de login com credenciais vazias");
+                return null;
+            }
+
+            var usuario = await _usuarioRepository.GetByEmailAsync(request.Email);
+
+            if (usuario == null || !usuario.Ativo)
+            {
+                _logger.LogWarning($"Tentativa de login com email inválido ou usuário inativo: {request.Email}");
+                return null;
+            }
+
+            if (!BCrypt.Verify(request.Senha, usuario.SenhaHash))
+            {
+                _logger.LogWarning($"Tentativa de login com senha incorreta para: {request.Email}");
+                return null;
+            }
+
+            // Atualizar último login
+            usuario.UltimoLogin = DateTime.UtcNow;
+            await _usuarioRepository.UpdateAsync(usuario);
+            await _usuarioRepository.SaveAsync();
+
+            _usuarioLogado = usuario;
+
+            _logger.LogInformation($"Usuário logado com sucesso: {usuario.Email}");
+
+            return new LoginResponseDto
+            {
+                Id = usuario.Id,
+                Nome = usuario.Nome,
+                Email = usuario.Email,
+                Ativo = usuario.Ativo
+            };
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Erro ao realizar login");
+            throw;
+        }
+    }
+
+    /// <summary>
+    /// Obtém o usuário logado na sessão
+    /// </summary>
+    public Usuario? GetUsuarioLogado()
+    {
+        return _usuarioLogado;
+    }
+
+    /// <summary>
+    /// Define o usuário logado
+    /// </summary>
+    public void SetUsuarioLogado(Usuario usuario)
+    {
+        _usuarioLogado = usuario;
+    }
+
+    /// <summary>
+    /// Realiza logout do usuário
+    /// </summary>
+    public void Logout()
+    {
+        if (_usuarioLogado != null)
+        {
+            _logger.LogInformation($"Usuário deslogado: {_usuarioLogado.Email}");
+        }
+        _usuarioLogado = null;
+    }
+
+    /// <summary>
+    /// Altera a senha do usuário
+    /// </summary>
+    public async Task<bool> AlterarSenhaAsync(Guid usuarioId, string senhaAtual, string novaSenha)
+    {
+        try
+        {
+            var usuario = await _usuarioRepository.GetByIdAsync(usuarioId);
+
+            if (usuario == null)
+            {
+                _logger.LogWarning($"Usuário não encontrado para alteração de senha: {usuarioId}");
+                return false;
+            }
+
+            if (!BCrypt.Verify(senhaAtual, usuario.SenhaHash))
+            {
+                _logger.LogWarning($"Senha atual incorreta para usuário: {usuario.Email}");
+                return false;
+            }
+
+            usuario.SenhaHash = BCrypt.HashPassword(novaSenha);
+            usuario.UpdatedAt = DateTime.UtcNow;
+
+            await _usuarioRepository.UpdateAsync(usuario);
+            await _usuarioRepository.SaveAsync();
+
+            _logger.LogInformation($"Senha alterada com sucesso para usuário: {usuario.Email}");
+            return true;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Erro ao alterar senha");
+            throw;
+        }
+    }
+
+    /// <summary>
+    /// Solicita recuperação de senha
+    /// </summary>
+    public async Task<bool> SolicitarRecuperacaoSenhaAsync(string email)
+    {
+        try
+        {
+            var usuario = await _usuarioRepository.GetByEmailAsync(email);
+
+            if (usuario == null)
+            {
+                // Não revelar se o email existe ou não
+                _logger.LogInformation($"Solicitação de recuperação de senha para email inexistente: {email}");
+                return true;
+            }
+
+            usuario.RecuperacaoToken = Guid.NewGuid().ToString();
+            usuario.RecuperacaoTokenExpiracao = DateTime.UtcNow.AddHours(1);
+
+            await _usuarioRepository.UpdateAsync(usuario);
+            await _usuarioRepository.SaveAsync();
+
+            _logger.LogInformation($"Token de recuperação gerado para: {usuario.Email}");
+            return true;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Erro ao solicitar recuperação de senha");
+            throw;
+        }
+    }
+
+    /// <summary>
+    /// Reseta a senha usando token de recuperação
+    /// </summary>
+    public async Task<bool> ResetarSenhaAsync(string token, string novaSenha)
+    {
+        try
+        {
+            var usuarios = await _usuarioRepository.GetAllAsync();
+            var usuario = usuarios.FirstOrDefault(u => u.RecuperacaoToken == token);
+
+            if (usuario == null)
+            {
+                _logger.LogWarning("Token de recuperação inválido");
+                return false;
+            }
+
+            if (usuario.RecuperacaoTokenExpiracao < DateTime.UtcNow)
+            {
+                _logger.LogWarning($"Token de recuperação expirado para: {usuario.Email}");
+                return false;
+            }
+
+            usuario.SenhaHash = BCrypt.HashPassword(novaSenha);
+            usuario.RecuperacaoToken = null;
+            usuario.RecuperacaoTokenExpiracao = null;
+            usuario.UpdatedAt = DateTime.UtcNow;
+
+            await _usuarioRepository.UpdateAsync(usuario);
+            await _usuarioRepository.SaveAsync();
+
+            _logger.LogInformation($"Senha resetada com sucesso para: {usuario.Email}");
+            return true;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Erro ao resetar senha");
+            throw;
+        }
+    }
+}

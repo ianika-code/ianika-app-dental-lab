@@ -1,0 +1,24 @@
+# Ignore Visual Studio artifacts
+.vs/
+.vscode/
+bin/
+obj/
+*.user
+*.suo
+*.userprefs
+
+# Ignore build outputs
+dist/
+build/
+
+# Dependencies
+packages/
+.nuget/
+
+# IDE files
+*.sln.iml
+.DS_Store
+
+# Local user-specific files
+*.local.config
+appsettings.local.json
