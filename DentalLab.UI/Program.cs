@@ -52,7 +52,7 @@ static class Program
 
                 .AddTransient<LoginForm>()
                 .AddTransient<MainForm>()
-
+                .AddTransient<FrmDentistas>()
                 .BuildServiceProvider();
 
             // Aplicar migrations e seed

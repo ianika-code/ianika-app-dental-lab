@@ -1,15 +1,19 @@
 namespace DentalLab.UI.Forms;
 
 using DentalLab.UI.Context;
+using Microsoft.Extensions.DependencyInjection;
 
 /// <summary>
 /// Formulário Principal (Dashboard)
 /// </summary>
 public partial class MainForm : Form
 {
-    public MainForm()
+    private readonly IServiceProvider _serviceProvider;
+
+    public MainForm(IServiceProvider serviceProvider)
     {
         InitializeComponent();
+        _serviceProvider = serviceProvider;
     }
 
     private void MainForm_Load(object sender, EventArgs e)
@@ -29,5 +33,14 @@ public partial class MainForm : Form
     {
         UserContext.ClearSession();
         this.Close();
+    }
+
+    private void menuDentistas_Click(object sender, EventArgs e)
+    {
+        MessageBox.Show("Clique chegou aqui!");
+
+        var frm = _serviceProvider.GetRequiredService<FrmDentistas>();
+
+        frm.ShowDialog();
     }
 }

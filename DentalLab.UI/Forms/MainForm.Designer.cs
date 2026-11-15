@@ -46,10 +46,19 @@ partial class MainForm
 
         // Cadastros
         cadastrosToolStripMenuItem.Text = "Cadastros";
+
+        var dentistasMenuItem = new ToolStripMenuItem();
+        var pacientesMenuItem = new ToolStripMenuItem();
+
+        dentistasMenuItem.Text = "Dentistas";
+        pacientesMenuItem.Text = "Pacientes";
+
+        dentistasMenuItem.Click += menuDentistas_Click;
+
         cadastrosToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[]
         {
-            new ToolStripMenuItem("Dentistas"),
-            new ToolStripMenuItem("Pacientes")
+            dentistasMenuItem,
+            pacientesMenuItem
         });
 
         // Operações

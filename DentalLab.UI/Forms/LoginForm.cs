@@ -4,6 +4,7 @@ using DentalLab.Application.DTOs;
 using DentalLab.Application.Services;
 using DentalLab.UI.Context;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.DependencyInjection;
 using WinFormsApplication = System.Windows.Forms.Application;
 
 /// <summary>
@@ -13,12 +14,18 @@ public partial class LoginForm : Form
 {
     private readonly LoginService _loginService;
     private readonly ILogger<LoginForm> _logger;
+    private readonly IServiceProvider _serviceProvider;
 
-    public LoginForm(LoginService loginService, ILogger<LoginForm> logger)
+    public LoginForm(
+        LoginService loginService,
+        ILogger<LoginForm> logger,
+        IServiceProvider serviceProvider)
     {
         InitializeComponent();
+
         _loginService = loginService;
         _logger = logger;
+        _serviceProvider = serviceProvider;
     }
 
     private async void LoginForm_Load(object sender, EventArgs e)
@@ -60,7 +67,8 @@ public partial class LoginForm : Form
                 _logger.LogInformation($"Usuário {resultado.Email} logado com sucesso");
 
                 // Abrir formulário principal
-                var mainForm = new MainForm();
+                var mainForm = _serviceProvider.GetRequiredService<MainForm>();
+
                 this.Hide();
                 mainForm.ShowDialog();
                 this.Close();
