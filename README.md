@@ -10,10 +10,11 @@ Aplicativo desktop para administração de laboratório de prótese dentária, c
 - Validação de CRO e CPF únicos, campos obrigatórios e relacionamento do paciente com dentista.
 - Cadastro, edição, pesquisa, exclusão lógica e atualização de status dos pedidos.
 - Geração automática do número do pedido (`PED-AAAAMMDD-NNNN`).
-- Banco SQLite compatível com as tabelas `Usuarios` e `Dentistas` existentes; as tabelas `Pacientes` e `Pedidos` são criadas sem apagar ou recriar os registros existentes.
+- Controle de estoque por categoria, com saldo mínimo, entradas, saídas e histórico de movimentações.
+- Agenda de entregas, retornos e lembretes, com associação opcional a pedidos e dentistas e conclusão de eventos.
+- Dashboard com alertas de estoque baixo e eventos previstos para os próximos sete dias.
+- Banco SQLite compatível com os registros existentes; as tabelas de pacientes, pedidos, estoque e agenda são criadas de forma incremental, sem apagar os dados existentes.
 - Logs em arquivo local.
-
-Estoque, Agenda e relatórios ainda não estão incluídos nesta etapa.
 
 ## Executar
 

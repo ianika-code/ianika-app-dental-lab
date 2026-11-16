@@ -2,10 +2,14 @@ import 'package:material_ui/material_ui.dart';
 
 import '../models/app_user.dart';
 import '../services/dentist_service.dart';
+import '../services/agenda_service.dart';
+import '../services/inventory_service.dart';
 import '../services/order_service.dart';
 import '../services/patient_service.dart';
 import 'dashboard_page.dart';
+import 'agenda_page.dart';
 import 'dentists_page.dart';
+import 'inventory_page.dart';
 import 'orders_page.dart';
 import 'patients_page.dart';
 
@@ -15,6 +19,8 @@ class MainScreen extends StatefulWidget {
     required this.dentistService,
     required this.patientService,
     required this.orderService,
+    required this.inventoryService,
+    required this.agendaService,
     required this.onLogout,
     super.key,
   });
@@ -23,6 +29,8 @@ class MainScreen extends StatefulWidget {
   final DentistService dentistService;
   final PatientService patientService;
   final OrderService orderService;
+  final InventoryService inventoryService;
+  final AgendaService agendaService;
   final VoidCallback onLogout;
 
   @override
@@ -36,7 +44,9 @@ class _MainScreenState extends State<MainScreen> {
     0 => 'Visão geral',
     1 => 'Dentistas',
     2 => 'Pacientes',
-    _ => 'Pedidos',
+    3 => 'Pedidos',
+    4 => 'Estoque',
+    _ => 'Agenda',
   };
 
   @override
@@ -86,6 +96,16 @@ class _MainScreenState extends State<MainScreen> {
               icon: Icon(Icons.assignment_outlined),
               selectedIcon: Icon(Icons.assignment),
               label: Text('Pedidos'),
+            ),
+            NavigationRailDestination(
+              icon: Icon(Icons.inventory_2_outlined),
+              selectedIcon: Icon(Icons.inventory_2),
+              label: Text('Estoque'),
+            ),
+            NavigationRailDestination(
+              icon: Icon(Icons.event_outlined),
+              selectedIcon: Icon(Icons.event),
+              label: Text('Agenda'),
             ),
           ],
           trailing: Expanded(
@@ -149,10 +169,14 @@ class _MainScreenState extends State<MainScreen> {
       dentistService: widget.dentistService,
       patientService: widget.patientService,
       orderService: widget.orderService,
+      inventoryService: widget.inventoryService,
+      agendaService: widget.agendaService,
       onNavigate: (index) => setState(() => _selectedIndex = index),
     ),
     1 => DentistsPage(dentistService: widget.dentistService),
     2 => PatientsPage(patientService: widget.patientService),
-    _ => OrdersPage(orderService: widget.orderService),
+    3 => OrdersPage(orderService: widget.orderService),
+    4 => InventoryPage(inventoryService: widget.inventoryService),
+    _ => AgendaPage(agendaService: widget.agendaService),
   };
 }

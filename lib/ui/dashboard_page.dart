@@ -2,6 +2,8 @@ import 'package:material_ui/material_ui.dart';
 
 import '../models/lab_order.dart';
 import '../services/dentist_service.dart';
+import '../services/agenda_service.dart';
+import '../services/inventory_service.dart';
 import '../services/order_service.dart';
 import '../services/patient_service.dart';
 
@@ -10,6 +12,8 @@ class DashboardPage extends StatefulWidget {
     required this.dentistService,
     required this.patientService,
     required this.orderService,
+    required this.inventoryService,
+    required this.agendaService,
     required this.onNavigate,
     super.key,
   });
@@ -17,6 +21,8 @@ class DashboardPage extends StatefulWidget {
   final DentistService dentistService;
   final PatientService patientService;
   final OrderService orderService;
+  final InventoryService inventoryService;
+  final AgendaService agendaService;
   final ValueChanged<int> onNavigate;
 
   @override
@@ -37,7 +43,9 @@ class _DashboardPageState extends State<DashboardPage> {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.dentistService != widget.dentistService ||
         oldWidget.patientService != widget.patientService ||
-        oldWidget.orderService != widget.orderService) {
+        oldWidget.orderService != widget.orderService ||
+        oldWidget.inventoryService != widget.inventoryService ||
+        oldWidget.agendaService != widget.agendaService) {
       _counts = _loadCounts();
     }
   }
@@ -46,6 +54,8 @@ class _DashboardPageState extends State<DashboardPage> {
     final dentists = await widget.dentistService.getAll();
     final patients = await widget.patientService.getAll();
     final orders = await widget.orderService.getAll();
+    final lowStockItems = await widget.inventoryService.getLowStock();
+    final upcomingEvents = await widget.agendaService.getUpcoming();
     return _DashboardCounts(
       dentists: dentists.length,
       patients: patients.length,
@@ -57,6 +67,8 @@ class _DashboardPageState extends State<DashboardPage> {
                 order.status != OrderStatus.delivered,
           )
           .length,
+      lowStockItems: lowStockItems.length,
+      upcomingEvents: upcomingEvents.length,
     );
   }
 
@@ -85,7 +97,7 @@ class _DashboardPageState extends State<DashboardPage> {
           LayoutBuilder(
             builder: (context, constraints) {
               final columns = constraints.maxWidth > 1000
-                  ? 4
+                  ? 3
                   : constraints.maxWidth > 650
                   ? 2
                   : 1;
@@ -121,31 +133,24 @@ class _DashboardPageState extends State<DashboardPage> {
                     icon: Icons.pending_actions_outlined,
                     onTap: () => widget.onNavigate(3),
                   ),
+                  _DashboardCard(
+                    title: 'Estoque baixo',
+                    count: snapshot.data?.lowStockItems,
+                    icon: Icons.warning_amber_outlined,
+                    onTap: () => widget.onNavigate(4),
+                  ),
+                  _DashboardCard(
+                    title: 'Agenda • 7 dias',
+                    count: snapshot.data?.upcomingEvents,
+                    icon: Icons.event_available_outlined,
+                    onTap: () => widget.onNavigate(5),
+                  ),
                 ],
               );
             },
           ),
           const SizedBox(height: 18),
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.all(22),
-              child: Row(
-                children: [
-                  Icon(
-                    Icons.info_outline,
-                    color: Theme.of(context).colorScheme.primary,
-                  ),
-                  const SizedBox(width: 14),
-                  const Expanded(
-                    child: Text(
-                      'O Dashboard agora dá acesso aos cadastros de dentistas, '
-                      'pacientes e pedidos. Estoque e Agenda continuam previstos para uma próxima etapa.',
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
+          const SizedBox(height: 8),
         ],
       );
     },
@@ -158,12 +163,16 @@ class _DashboardCounts {
     required this.patients,
     required this.orders,
     required this.activeOrders,
+    required this.lowStockItems,
+    required this.upcomingEvents,
   });
 
   final int dentists;
   final int patients;
   final int orders;
   final int activeOrders;
+  final int lowStockItems;
+  final int upcomingEvents;
 }
 
 class _DashboardCard extends StatelessWidget {

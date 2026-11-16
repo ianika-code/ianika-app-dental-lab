@@ -1,9 +1,13 @@
 import 'package:intl/intl.dart';
 
 final _dateFormat = DateFormat('dd/MM/yyyy');
+final _dateTimeFormat = DateFormat('dd/MM/yyyy HH:mm');
 final _currencyFormat = NumberFormat.currency(locale: 'pt_BR', symbol: 'R\$');
 
 String formatDate(DateTime date) => _dateFormat.format(date.toLocal());
+
+String formatDateTime(DateTime date) =>
+    _dateTimeFormat.format(date.toLocal());
 
 String formatCpf(String cpf) {
   final digits = cpf.replaceAll(RegExp(r'\D'), '');

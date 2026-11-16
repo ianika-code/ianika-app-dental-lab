@@ -5,16 +5,23 @@ import 'package:path/path.dart' as path;
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 import 'package:ianika_app_dental_lab/data/dental_lab_database.dart';
+import 'package:ianika_app_dental_lab/data/agenda_repository.dart';
 import 'package:ianika_app_dental_lab/data/dentist_repository.dart';
+import 'package:ianika_app_dental_lab/data/inventory_repository.dart';
 import 'package:ianika_app_dental_lab/data/order_repository.dart';
 import 'package:ianika_app_dental_lab/data/patient_repository.dart';
 import 'package:ianika_app_dental_lab/data/user_repository.dart';
 import 'package:ianika_app_dental_lab/models/dentist.dart';
+import 'package:ianika_app_dental_lab/models/agenda_event.dart';
+import 'package:ianika_app_dental_lab/models/inventory_item.dart';
 import 'package:ianika_app_dental_lab/models/lab_order.dart';
 import 'package:ianika_app_dental_lab/models/patient.dart';
+import 'package:ianika_app_dental_lab/models/stock_movement.dart';
 import 'package:ianika_app_dental_lab/services/auth_service.dart';
+import 'package:ianika_app_dental_lab/services/agenda_service.dart';
 import 'package:ianika_app_dental_lab/services/dentist_service.dart';
 import 'package:ianika_app_dental_lab/services/file_logger.dart';
+import 'package:ianika_app_dental_lab/services/inventory_service.dart';
 import 'package:ianika_app_dental_lab/services/order_service.dart';
 import 'package:ianika_app_dental_lab/services/patient_service.dart';
 import 'package:ianika_app_dental_lab/services/service_exception.dart';
@@ -26,6 +33,8 @@ void main() {
   late DentistService dentistService;
   late PatientService patientService;
   late OrderService orderService;
+  late InventoryService inventoryService;
+  late AgendaService agendaService;
 
   setUpAll(sqfliteFfiInit);
 
@@ -41,7 +50,18 @@ void main() {
       PatientRepository(database.database),
       logger,
     );
-    orderService = OrderService(OrderRepository(database.database), logger);
+    final orderRepository = OrderRepository(database.database);
+    orderService = OrderService(orderRepository, logger);
+    inventoryService = InventoryService(
+      InventoryRepository(database.database),
+      logger,
+    );
+    agendaService = AgendaService(
+      AgendaRepository(database.database),
+      orderRepository,
+      dentistRepository,
+      logger,
+    );
   });
 
   tearDown(() async {
@@ -242,6 +262,95 @@ void main() {
       orderService.create(valid),
       throwsA(isA<ServiceException>()),
     );
+  });
+
+  test('estoque registra movimentos e recusa saída acima do saldo', () async {
+    await inventoryService.create(
+      const InventoryItemInput(
+        name: 'Resina universal',
+        category: StockCategory.resins,
+        minimumQuantity: 3,
+        unit: 'un.',
+        unitPrice: 42.50,
+      ),
+    );
+    var item = (await inventoryService.getAll()).single;
+    expect(item.currentQuantity, 0);
+    expect(item.isLow, isTrue);
+
+    item = await inventoryService.registerMovement(
+      StockMovementInput(
+        itemId: item.id,
+        type: StockMovementType.entry,
+        quantity: 5,
+        reason: 'Compra',
+      ),
+    );
+    expect(item.currentQuantity, 5);
+
+    item = await inventoryService.registerMovement(
+      StockMovementInput(
+        itemId: item.id,
+        type: StockMovementType.exit,
+        quantity: 3,
+        reason: 'Consumo',
+      ),
+    );
+    expect(item.currentQuantity, 2);
+    expect(item.isLow, isTrue);
+    await expectLater(
+      inventoryService.registerMovement(
+        StockMovementInput(
+          itemId: item.id,
+          type: StockMovementType.exit,
+          quantity: 3,
+          reason: 'Saída acima do saldo',
+        ),
+      ),
+      throwsA(isA<ServiceException>()),
+    );
+
+    expect((await inventoryService.getAll()).single.currentQuantity, 2);
+    final history = await inventoryService.getHistory(item.id);
+    expect(history, hasLength(2));
+    expect(
+      history.map((movement) => movement.type),
+      containsAll([StockMovementType.entry, StockMovementType.exit]),
+    );
+  });
+
+  test('agenda filtra próximos eventos e preserva conclusão', () async {
+    final now = DateTime.now();
+    await agendaService.create(
+      AgendaEventInput(
+        type: AgendaEventType.delivery,
+        title: 'Entrega da coroa',
+        dateTime: now.add(const Duration(days: 2)),
+      ),
+    );
+    await agendaService.create(
+      AgendaEventInput(
+        type: AgendaEventType.returnVisit,
+        title: 'Retorno futuro',
+        dateTime: now.add(const Duration(days: 10)),
+      ),
+    );
+
+    var events = await agendaService.getAll();
+    expect(events, hasLength(2));
+    expect((await agendaService.getUpcoming()).map((event) => event.title), [
+      'Entrega da coroa',
+    ]);
+
+    await agendaService.markCompleted(events.first);
+    events = await agendaService.getAll();
+    expect(events.first.completed, isTrue);
+    expect(await agendaService.getUpcoming(), isEmpty);
+
+    await agendaService.delete(events.first);
+    expect((await agendaService.getAll()).map((event) => event.title), [
+      'Retorno futuro',
+    ]);
   });
 
   test('atualiza schema antigo sem apagar usuários ou dentistas', () async {

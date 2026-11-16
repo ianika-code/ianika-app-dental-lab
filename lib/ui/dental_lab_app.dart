@@ -2,7 +2,9 @@ import 'package:material_ui/material_ui.dart';
 
 import '../models/app_user.dart';
 import '../services/auth_service.dart';
+import '../services/agenda_service.dart';
 import '../services/dentist_service.dart';
+import '../services/inventory_service.dart';
 import '../services/order_service.dart';
 import '../services/patient_service.dart';
 import 'login_screen.dart';
@@ -14,6 +16,8 @@ class DentalLabApp extends StatefulWidget {
     required this.dentistService,
     required this.patientService,
     required this.orderService,
+    required this.inventoryService,
+    required this.agendaService,
     super.key,
   });
 
@@ -21,6 +25,8 @@ class DentalLabApp extends StatefulWidget {
   final DentistService dentistService;
   final PatientService patientService;
   final OrderService orderService;
+  final InventoryService inventoryService;
+  final AgendaService agendaService;
 
   @override
   State<DentalLabApp> createState() => _DentalLabAppState();
@@ -53,6 +59,8 @@ class _DentalLabAppState extends State<DentalLabApp> {
             dentistService: widget.dentistService,
             patientService: widget.patientService,
             orderService: widget.orderService,
+            inventoryService: widget.inventoryService,
+            agendaService: widget.agendaService,
             onLogout: () => setState(() => _user = null),
           ),
   );

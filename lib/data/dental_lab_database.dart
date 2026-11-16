@@ -113,6 +113,55 @@ class DentalLabDatabase {
         FOREIGN KEY(DentistaId) REFERENCES Dentistas(Id) ON DELETE RESTRICT
       )
     ''');
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS EstoqueItems (
+        Id TEXT NOT NULL PRIMARY KEY,
+        CreatedAt TEXT NOT NULL,
+        UpdatedAt TEXT,
+        IsDeleted INTEGER NOT NULL DEFAULT 0,
+        Nome TEXT NOT NULL CHECK(length(Nome) <= 150),
+        Categoria INTEGER NOT NULL,
+        Descricao TEXT,
+        QuantidadeAtual INTEGER NOT NULL DEFAULT 0 CHECK(QuantidadeAtual >= 0),
+        QuantidadeMinima INTEGER NOT NULL CHECK(QuantidadeMinima >= 0),
+        UnidadeMedida TEXT NOT NULL CHECK(length(UnidadeMedida) <= 20),
+        ValorUnitario REAL NOT NULL DEFAULT 0 CHECK(ValorUnitario >= 0),
+        Fornecedor TEXT,
+        DataUltimaEntrada TEXT
+      )
+    ''');
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS MovimentacoesEstoque (
+        Id TEXT NOT NULL PRIMARY KEY,
+        CreatedAt TEXT NOT NULL,
+        UpdatedAt TEXT,
+        IsDeleted INTEGER NOT NULL DEFAULT 0,
+        EstoqueItemId TEXT NOT NULL,
+        Tipo INTEGER NOT NULL,
+        Quantidade INTEGER NOT NULL CHECK(Quantidade > 0),
+        DataMovimentacao TEXT NOT NULL,
+        Motivo TEXT NOT NULL CHECK(length(Motivo) <= 200),
+        Observacoes TEXT,
+        FOREIGN KEY(EstoqueItemId) REFERENCES EstoqueItems(Id) ON DELETE RESTRICT
+      )
+    ''');
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS EventosAgenda (
+        Id TEXT NOT NULL PRIMARY KEY,
+        CreatedAt TEXT NOT NULL,
+        UpdatedAt TEXT,
+        IsDeleted INTEGER NOT NULL DEFAULT 0,
+        Tipo INTEGER NOT NULL,
+        Titulo TEXT NOT NULL CHECK(length(Titulo) <= 200),
+        Descricao TEXT,
+        DataHora TEXT NOT NULL,
+        PedidoId TEXT,
+        DentistaId TEXT,
+        Concluido INTEGER NOT NULL DEFAULT 0,
+        FOREIGN KEY(PedidoId) REFERENCES Pedidos(Id) ON DELETE SET NULL,
+        FOREIGN KEY(DentistaId) REFERENCES Dentistas(Id) ON DELETE SET NULL
+      )
+    ''');
     await db.execute(
       'CREATE UNIQUE INDEX IF NOT EXISTS IX_Dentistas_CRO ON Dentistas(CRO)',
     );
@@ -127,6 +176,15 @@ class DentalLabDatabase {
     );
     await db.execute(
       'CREATE INDEX IF NOT EXISTS IX_Pedidos_IsDeleted_DataPedido ON Pedidos(IsDeleted, DataPedido)',
+    );
+    await db.execute(
+      'CREATE INDEX IF NOT EXISTS IX_EstoqueItems_IsDeleted_Nome ON EstoqueItems(IsDeleted, Nome)',
+    );
+    await db.execute(
+      'CREATE INDEX IF NOT EXISTS IX_MovimentacoesEstoque_EstoqueItemId_DataMovimentacao ON MovimentacoesEstoque(EstoqueItemId, DataMovimentacao)',
+    );
+    await db.execute(
+      'CREATE INDEX IF NOT EXISTS IX_EventosAgenda_IsDeleted_DataHora ON EventosAgenda(IsDeleted, DataHora)',
     );
   }
 
