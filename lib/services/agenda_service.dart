@@ -38,9 +38,27 @@ class AgendaService {
     }
   }
 
-  Future<List<LabOrder>> getOrders() => _orders.getAll();
+  Future<List<LabOrder>> getOrders() async {
+    try {
+      return await _orders.getAll();
+    } catch (error, stackTrace) {
+      _logger.error('Falha ao carregar pedidos para agenda', error, stackTrace);
+      rethrow;
+    }
+  }
 
-  Future<List<Dentist>> getDentists() => _dentists.getAll();
+  Future<List<Dentist>> getDentists() async {
+    try {
+      return await _dentists.getAll();
+    } catch (error, stackTrace) {
+      _logger.error(
+        'Falha ao carregar dentistas para agenda',
+        error,
+        stackTrace,
+      );
+      rethrow;
+    }
+  }
 
   Future<void> create(AgendaEventInput input) async {
     final normalized = _normalize(input);

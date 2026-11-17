@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:material_ui/material_ui.dart';
+import 'package:path/path.dart' as path_utils;
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 import 'data/dental_lab_database.dart';
@@ -24,8 +25,17 @@ Future<void> main() async {
   sqfliteFfiInit();
 
   final databasePath = Platform.environment['DENTALLAB_DB_PATH'];
-  final database = await DentalLabDatabase.open(path: databasePath);
-  final logger = FileLogger(database.directoryPath);
+  final logDirectory = path_utils.dirname(
+    DentalLabDatabase.resolveDatabasePath(databasePath),
+  );
+  final logger = FileLogger(logDirectory);
+  late final DentalLabDatabase database;
+  try {
+    database = await DentalLabDatabase.open(path: databasePath);
+  } catch (error, stackTrace) {
+    logger.error('Falha ao inicializar o banco de dados', error, stackTrace);
+    rethrow;
+  }
   final dentistRepository = DentistRepository(database.database);
   final patientRepository = PatientRepository(database.database);
   final orderRepository = OrderRepository(database.database);

@@ -88,6 +88,20 @@ void main() {
     expect(row['UltimoLogin'], isA<String>());
   });
 
+  test('registra falhas de leitura dos dados auxiliares', () async {
+    await database.database.execute('DROP TABLE Dentistas');
+
+    await expectLater(
+      dentistService.getAllForForm(),
+      throwsA(isA<Exception>()),
+    );
+
+    final log = await File(path.join(directory.path, 'logs', 'dentallab.log'))
+        .readAsString();
+    expect(log, contains('Falha ao carregar dentistas para formulário'));
+    expect(log, contains('ERROR'));
+  });
+
   test(
     'cadastro de pacientes valida CPF, pesquisa e preserva exclusão lógica',
     () async {

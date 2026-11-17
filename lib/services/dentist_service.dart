@@ -18,7 +18,18 @@ class DentistService {
     }
   }
 
-  Future<List<Dentist>> getAllForForm() => _repository.getAll();
+  Future<List<Dentist>> getAllForForm() async {
+    try {
+      return await _repository.getAll();
+    } catch (error, stackTrace) {
+      _logger.error(
+        'Falha ao carregar dentistas para formulário',
+        error,
+        stackTrace,
+      );
+      rethrow;
+    }
+  }
 
   Future<void> create(DentistInput input) async {
     final normalized = _normalize(input);

@@ -13,9 +13,7 @@ class DentalLabDatabase {
   final String directoryPath;
 
   static Future<DentalLabDatabase> open({String? path}) async {
-    final databasePath = path == null || path.trim().isEmpty
-        ? path_utils.join(_defaultDirectory(), 'dental-lab-db.db')
-        : File(path).absolute.path;
+    final databasePath = resolveDatabasePath(path);
     final directoryPath = path_utils.dirname(databasePath);
     await Directory(directoryPath).create(recursive: true);
 
@@ -37,6 +35,11 @@ class DentalLabDatabase {
     );
     return DentalLabDatabase._(database, directoryPath);
   }
+
+  static String resolveDatabasePath(String? path) =>
+      path == null || path.trim().isEmpty
+      ? path_utils.join(_defaultDirectory(), 'dental-lab-db.db')
+      : File(path).absolute.path;
 
   Future<void> close() => database.close();
 

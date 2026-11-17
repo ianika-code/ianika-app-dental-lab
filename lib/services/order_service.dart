@@ -20,15 +20,43 @@ class OrderService {
     }
   }
 
-  Future<List<Patient>> getPatients() => _orders.getPatients();
+  Future<List<Patient>> getPatients() async {
+    try {
+      return await _orders.getPatients();
+    } catch (error, stackTrace) {
+      _logger.error(
+        'Falha ao carregar pacientes para pedido',
+        error,
+        stackTrace,
+      );
+      rethrow;
+    }
+  }
 
-  Future<List<Dentist>> getDentists() => _orders.getDentists();
+  Future<List<Dentist>> getDentists() async {
+    try {
+      return await _orders.getDentists();
+    } catch (error, stackTrace) {
+      _logger.error(
+        'Falha ao carregar dentistas para pedido',
+        error,
+        stackTrace,
+      );
+      rethrow;
+    }
+  }
 
   Future<String> nextOrderNumber() async {
     final now = DateTime.now();
     final prefix =
         'PED-${now.year.toString().padLeft(4, '0')}${now.month.toString().padLeft(2, '0')}${now.day.toString().padLeft(2, '0')}-';
-    final latest = await _orders.latestNumberForPrefix(prefix);
+    late final String? latest;
+    try {
+      latest = await _orders.latestNumberForPrefix(prefix);
+    } catch (error, stackTrace) {
+      _logger.error('Falha ao gerar número do pedido', error, stackTrace);
+      rethrow;
+    }
     final sequence = latest == null
         ? 1
         : (int.tryParse(latest.substring(prefix.length)) ?? 0) + 1;
