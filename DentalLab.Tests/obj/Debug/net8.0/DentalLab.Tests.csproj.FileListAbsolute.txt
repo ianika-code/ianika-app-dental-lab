@@ -1,0 +1,6 @@
+C:\Users\ypiia\OneDrive\repo\ianika-app-dental-lab\DentalLab.Tests\obj\Debug\net8.0\DentalLab.Tests.csproj.AssemblyReference.cache
+C:\Users\ypiia\OneDrive\repo\ianika-app-dental-lab\DentalLab.Tests\obj\Debug\net8.0\DentalLab.Tests.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\ypiia\OneDrive\repo\ianika-app-dental-lab\DentalLab.Tests\obj\Debug\net8.0\DentalLab.Tests.AssemblyInfoInputs.cache
+C:\Users\ypiia\OneDrive\repo\ianika-app-dental-lab\DentalLab.Tests\obj\Debug\net8.0\DentalLab.Tests.AssemblyInfo.cs
+C:\Users\ypiia\OneDrive\repo\ianika-app-dental-lab\DentalLab.Tests\obj\Debug\net8.0\DentalLab.Tests.csproj.CoreCompileInputs.cache
+C:\Users\ypiia\OneDrive\repo\ianika-app-dental-lab\DentalLab.Tests\obj\Debug\net8.0\DentalLab.Tests.sourcelink.json

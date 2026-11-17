@@ -1,0 +1,13 @@
+{
+  "version": 2,
+  "dgSpecHash": "SU5Cv9iIH0s=",
+  "success": true,
+  "projectFilePath": "C:\\Users\\ypiia\\OneDrive\\repo\\ianika-app-dental-lab\\DentalLab.Domain\\DentalLab.Domain.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\ypiia\\.nuget\\packages\\fluentvalidation\\11.9.2\\fluentvalidation.11.9.2.nupkg.sha512",
+    "C:\\Users\\ypiia\\.nuget\\packages\\microsoft.netcore.app.ref\\8.0.34\\microsoft.netcore.app.ref.8.0.34.nupkg.sha512",
+    "C:\\Users\\ypiia\\.nuget\\packages\\microsoft.windowsdesktop.app.ref\\8.0.34\\microsoft.windowsdesktop.app.ref.8.0.34.nupkg.sha512",
+    "C:\\Users\\ypiia\\.nuget\\packages\\microsoft.aspnetcore.app.ref\\8.0.34\\microsoft.aspnetcore.app.ref.8.0.34.nupkg.sha512"
+  ],
+  "logs": []
+}

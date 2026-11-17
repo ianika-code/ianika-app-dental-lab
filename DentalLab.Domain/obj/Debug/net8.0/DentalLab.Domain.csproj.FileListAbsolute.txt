@@ -1,0 +1,13 @@
+C:\Users\ypiia\OneDrive\repo\ianika-app-dental-lab\DentalLab.Domain\bin\Debug\net8.0\DentalLab.Domain.deps.json
+C:\Users\ypiia\OneDrive\repo\ianika-app-dental-lab\DentalLab.Domain\bin\Debug\net8.0\DentalLab.Domain.dll
+C:\Users\ypiia\OneDrive\repo\ianika-app-dental-lab\DentalLab.Domain\bin\Debug\net8.0\DentalLab.Domain.pdb
+C:\Users\ypiia\OneDrive\repo\ianika-app-dental-lab\DentalLab.Domain\obj\Debug\net8.0\DentalLab.Domain.csproj.AssemblyReference.cache
+C:\Users\ypiia\OneDrive\repo\ianika-app-dental-lab\DentalLab.Domain\obj\Debug\net8.0\DentalLab.Domain.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\ypiia\OneDrive\repo\ianika-app-dental-lab\DentalLab.Domain\obj\Debug\net8.0\DentalLab.Domain.AssemblyInfoInputs.cache
+C:\Users\ypiia\OneDrive\repo\ianika-app-dental-lab\DentalLab.Domain\obj\Debug\net8.0\DentalLab.Domain.AssemblyInfo.cs
+C:\Users\ypiia\OneDrive\repo\ianika-app-dental-lab\DentalLab.Domain\obj\Debug\net8.0\DentalLab.Domain.csproj.CoreCompileInputs.cache
+C:\Users\ypiia\OneDrive\repo\ianika-app-dental-lab\DentalLab.Domain\obj\Debug\net8.0\DentalLab.Domain.sourcelink.json
+C:\Users\ypiia\OneDrive\repo\ianika-app-dental-lab\DentalLab.Domain\obj\Debug\net8.0\DentalLab.Domain.dll
+C:\Users\ypiia\OneDrive\repo\ianika-app-dental-lab\DentalLab.Domain\obj\Debug\net8.0\refint\DentalLab.Domain.dll
+C:\Users\ypiia\OneDrive\repo\ianika-app-dental-lab\DentalLab.Domain\obj\Debug\net8.0\DentalLab.Domain.pdb
+C:\Users\ypiia\OneDrive\repo\ianika-app-dental-lab\DentalLab.Domain\obj\Debug\net8.0\ref\DentalLab.Domain.dll
