@@ -1,0 +1,28 @@
+[2026-11-15 09:20:07] [INF] Iniciando aplicação DentalLab
+[2026-11-15 09:20:08] [INF] Executed DbCommand (13ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*) FROM "sqlite_master" WHERE "type" = 'table' AND "rootpage" IS NOT NULL;
+[2026-11-15 09:20:08] [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1
+    FROM "Usuarios" AS "u"
+    WHERE NOT ("u"."IsDeleted"))
+[2026-11-15 09:20:36] [INF] Executed DbCommand (3ms) [Parameters=[@__email_0='?' (Size = 21)], CommandType='"Text"', CommandTimeout='30']
+SELECT "u"."Id", "u"."Ativo", "u"."CreatedAt", "u"."Email", "u"."IsDeleted", "u"."Nome", "u"."RecuperacaoToken", "u"."RecuperacaoTokenExpiracao", "u"."SenhaHash", "u"."UltimoLogin", "u"."UpdatedAt"
+FROM "Usuarios" AS "u"
+WHERE NOT ("u"."IsDeleted") AND "u"."Email" = @__email_0
+LIMIT 1
+[2026-11-15 09:20:37] [INF] Executed DbCommand (2ms) [Parameters=[@p10='?' (DbType = Guid), @p0='?' (DbType = Boolean), @p1='?' (DbType = DateTime), @p2='?' (Size = 21), @p3='?' (DbType = Boolean), @p4='?' (Size = 13), @p5='?', @p6='?' (DbType = DateTime), @p7='?' (Size = 60), @p8='?' (DbType = DateTime), @p9='?' (DbType = DateTime)], CommandType='"Text"', CommandTimeout='30']
+UPDATE "Usuarios" SET "Ativo" = @p0, "CreatedAt" = @p1, "Email" = @p2, "IsDeleted" = @p3, "Nome" = @p4, "RecuperacaoToken" = @p5, "RecuperacaoTokenExpiracao" = @p6, "SenhaHash" = @p7, "UltimoLogin" = @p8, "UpdatedAt" = @p9
+WHERE "Id" = @p10
+RETURNING 1;
+[2026-11-15 09:20:37] [INF] Usuário logado com sucesso: admin@dentallab.local
+[2026-11-15 09:20:37] [INF] Usuário admin@dentallab.local logado com sucesso
+[2026-11-15 09:20:45] [INF] Executed DbCommand (0ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT "d"."Id", "d"."CRO", "d"."CreatedAt", "d"."Email", "d"."Endereco", "d"."IsDeleted", "d"."Nome", "d"."Observacoes", "d"."Telefone", "d"."UpdatedAt"
+FROM "Dentistas" AS "d"
+WHERE NOT ("d"."IsDeleted")
+[2026-11-15 09:21:05] [INF] Executed DbCommand (0ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT "d"."Id", "d"."CRO", "d"."CreatedAt", "d"."Email", "d"."Endereco", "d"."IsDeleted", "d"."Nome", "d"."Observacoes", "d"."Telefone", "d"."UpdatedAt"
+FROM "Dentistas" AS "d"
+WHERE NOT ("d"."IsDeleted")
+[2026-11-15 12:09:22] [INF] Aplicação encerrada normalmente

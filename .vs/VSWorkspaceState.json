@@ -1,0 +1,16 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\DentalLab.Infrastructure",
+    "\\DentalLab.Infrastructure\\Data",
+    "\\DentalLab.Infrastructure\\Extensions",
+    "\\DentalLab.Infrastructure\\Repositories",
+    "\\DentalLab.Tests",
+    "\\DentalLab.Tests\\Services",
+    "\\DentalLab.UI",
+    "\\DentalLab.UI\\Context",
+    "\\DentalLab.UI\\Forms"
+  ],
+  "SelectedNode": "\\DentalLab.UI\\DentalLab.UI.csproj",
+  "PreviewInSolutionExplorer": false
+}

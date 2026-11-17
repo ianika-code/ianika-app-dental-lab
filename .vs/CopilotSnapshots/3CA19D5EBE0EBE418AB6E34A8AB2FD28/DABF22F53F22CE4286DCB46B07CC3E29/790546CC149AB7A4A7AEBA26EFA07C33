@@ -1,0 +1,45 @@
+﻿namespace DentalLab.Infrastructure.Data;
+
+using DentalLab.Domain.Entities;
+using BCrypt.Net;
+using Microsoft.EntityFrameworkCore;
+
+/// <summary>
+/// Classe para seeding de dados iniciais no banco
+/// </summary>
+public static class DentalLabContextSeeder
+{
+    /// <summary>
+    /// Realiza o seeding de dados iniciais
+    /// </summary>
+    public static async Task SeedAsync(DentalLabContext context)
+    {
+        try
+        {
+            // Aplicar migrations automaticamente
+            await context.Database.MigrateAsync();
+
+            // Seed de Administrador
+            if (!await context.Usuarios.AnyAsync())
+            {
+                var adminUser = new Usuario
+                {
+                    Id = Guid.NewGuid(),
+                    Nome = "Administrador",
+                    Email = "admin@dentallab.local",
+                    SenhaHash = BCrypt.HashPassword("Admin@123"),
+                    Ativo = true,
+                    CreatedAt = DateTime.UtcNow,
+                    IsDeleted = false
+                };
+
+                context.Usuarios.Add(adminUser);
+                await context.SaveChangesAsync();
+            }
+        }
+        catch (Exception ex)
+        {
+            throw new InvalidOperationException("Erro ao fazer seeding do banco de dados", ex);
+        }
+    }
+}
